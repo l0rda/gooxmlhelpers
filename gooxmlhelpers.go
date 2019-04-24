@@ -49,6 +49,7 @@ func FillColor(ss spreadsheet.StyleSheet, cell spreadsheet.Cell, clr color.Color
 	fills := ss.Fills()
 	f := fills.AddFill()
 	f.SetPatternFill().SetFgColor(clr)
+	fillID := f.Index()
 	if origStylePointer == nil {
 		// don't need to copy style
 		cs.SetFill(f)
@@ -63,8 +64,7 @@ func FillColor(ss spreadsheet.StyleSheet, cell spreadsheet.Cell, clr color.Color
 		// new index always after source index in slice
 		if uint32(i) == cs.Index() {
 			*doc = *copySrc
-			id := f.Index()
-			doc.FillIdAttr = &id
+			doc.FillIdAttr = &fillID
 			break
 		}
 	}
@@ -77,6 +77,7 @@ func SetNumberFormat(ss spreadsheet.StyleSheet, cell spreadsheet.Cell, format st
 	origStylePointer := cell.X().SAttr
 	cs := ss.AddCellStyle()
 	cs.SetNumberFormat(format)
+	nfID := cs.NumberFormat()
 	if origStylePointer == nil {
 		// don't need to copy style
 		cell.SetStyle(cs)
@@ -90,8 +91,7 @@ func SetNumberFormat(ss spreadsheet.StyleSheet, cell spreadsheet.Cell, format st
 		// new index always after source index in slice
 		if uint32(i) == cs.Index() {
 			*doc = *copySrc
-			id := cs.NumberFormat()
-			doc.NumFmtIdAttr = &id
+			doc.NumFmtIdAttr = &nfID
 			break
 		}
 	}
