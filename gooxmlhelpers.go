@@ -42,7 +42,6 @@ func SetSpellFormula(cell spreadsheet.Cell, ref string) {
 	cell.SetFormulaRaw(GetSpellFormula(ref))
 }
 
-
 // FillColor - fill cell by reference with color and save current cell style
 func FillColor(ss spreadsheet.StyleSheet, cell spreadsheet.Cell, clr color.Color) {
 	origStylePointer := cell.X().SAttr
@@ -66,6 +65,33 @@ func FillColor(ss spreadsheet.StyleSheet, cell spreadsheet.Cell, clr color.Color
 			*doc = *copySrc
 			id := f.Index()
 			doc.FillIdAttr = &id
+			break
+		}
+	}
+	cell.SetStyle(cs)
+}
+
+// SetNumberFormat - set number format to cell by reference and save current cell style
+func SetNumberFormat(ss spreadsheet.StyleSheet, cell spreadsheet.Cell, format string) {
+	// TODO: validate format
+	origStylePointer := cell.X().SAttr
+	cs := ss.AddCellStyle()
+	cs.SetNumberFormat(format)
+	if origStylePointer == nil {
+		// don't need to copy style
+		cell.SetStyle(cs)
+		return
+	}
+	var copySrc *sml.CT_Xf
+	for i, doc := range ss.X().CellXfs.Xf {
+		if uint32(i) == *origStylePointer {
+			copySrc = doc
+		}
+		// new index always after source index in slice
+		if uint32(i) == cs.Index() {
+			*doc = *copySrc
+			id := cs.NumberFormat()
+			doc.NumFmtIdAttr = &id
 			break
 		}
 	}
